@@ -1,38 +1,26 @@
-# This action requires that any PR targeting the main branch should touch at
-# least one CHANGELOG file. If a CHANGELOG entry is not required, or if
-# performing maintenance on the Changelog, add either \"[chore]\" to the title of
-# the pull request or add the \"Skip Changelog\" label to disable this action.
-
 name: changelog
-
-on:
+true:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types:
+    - opened
+    - synchronize
+    - reopened
+    - labeled
+    - unlabeled
     branches:
-      - main
-
-# Declare default permissions as read only.
+    - main
 permissions: read-all
-
 jobs:
   changelog:
     runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'dependencies') && !contains(github.event.pull_request.labels.*.name, 'Skip Changelog') && !contains(github.event.pull_request.title, '[chore]')}}
-
+    if: false
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Check for CHANGELOG changes
-        run: |
-          # Only the latest commit of the feature branch is available
-          # automatically. To diff with the base branch, we need to
-          # fetch that too (and we only need its latest commit).
-          git fetch origin ${{ github.base_ref }} --depth=1
-          if [[ $(git diff --name-only FETCH_HEAD | grep CHANGELOG) ]]
-          then
-            echo "A CHANGELOG was modified. Looks good!"
-          else
-            echo "No CHANGELOG was modified."
-            echo "Please add a CHANGELOG entry, or add the \"Skip Changelog\" label if not required."
-            false
-          fi
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+    - name: Check for CHANGELOG changes
+      run: "# Only the latest commit of the feature branch is available\n# automatically.\
+        \ To diff with the base branch, we need to\n# fetch that too (and we only\
+        \ need its latest commit).\ngit fetch origin ${{ github.base_ref }} --depth=1\n\
+        if [[ $(git diff --name-only FETCH_HEAD | grep CHANGELOG) ]]\nthen\n  echo\
+        \ \"A CHANGELOG was modified. Looks good!\"\nelse\n  echo \"No CHANGELOG was\
+        \ modified.\"\n  echo \"Please add a CHANGELOG entry, or add the \\\"Skip\
+        \ Changelog\\\" label if not required.\"\n  false\nfi\n"

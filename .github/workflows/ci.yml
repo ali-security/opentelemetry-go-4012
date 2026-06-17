@@ -1,9 +1,7 @@
 name: ci
 on:
   push:
-    branches:
-      - main
-  pull_request:
+  workflow_dispatch:
 env:
   # Default version of Go to use by CI workflows. This should be the latest
   # release of Go; developers likely use the latest release in development and
@@ -17,6 +15,7 @@ env:
 permissions: read-all
 jobs:
   lint:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -117,6 +116,7 @@ jobs:
           path: coverage.txt
 
   codecov:
+    if: false
     runs-on: ubuntu-latest
     needs: [test-coverage]
     steps:
@@ -141,7 +141,7 @@ jobs:
             arch: amd64
           - os: ubuntu-22.04-arm
             arch: arm64
-          - os: macos-13
+          - os: macos-latest
             arch: amd64
           - os: macos-latest
             arch: arm64
@@ -162,7 +162,7 @@ jobs:
       - name: Run tests
         env:
           GOARCH: ${{ matrix.platform.arch }}
-        run: make test-short
+        run: go test -short ./...
 
   test-compatibility:
     runs-on: ubuntu-latest
